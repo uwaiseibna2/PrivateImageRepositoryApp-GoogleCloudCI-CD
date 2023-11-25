@@ -7,19 +7,6 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Set environment variables during the build process
-ARG FLASK_SECRET_KEY
-ARG DB_USER
-ARG DB_PASS
-ARG DB_NAME
-ARG CLOUD_SQL_CONNECTION_NAME
-
-ENV FLASK_SECRET_KEY=$FLASK_SECRET_KEY
-ENV DB_USER=$DB_USER
-ENV DB_PASS=$DB_PASS
-ENV DB_NAME=$DB_NAME
-ENV CLOUD_SQL_CONNECTION_NAME=$CLOUD_SQL_CONNECTION_NAME
-
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
