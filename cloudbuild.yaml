@@ -1,0 +1,22 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg=FLASK_SECRET_KEY=$_FLASK_SECRET_KEY'
+      - '--build-arg=DB_USER=$_DB_USER'
+      - '--build-arg=DB_PASS=$_DB_PASS'
+      - '--build-arg=DB_NAME=$_DB_NAME'
+      - '--build-arg=CLOUD_SQL_CONNECTION_NAME=$_CLOUD_SQL_CONNECTION_NAME'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/trial'  # Replace with your desired image name
+      - '.'
+
+substitutions:
+  _FLASK_SECRET_KEY: your_flask_secret_key
+  _DB_USER: your_db_user
+  _DB_PASS: your_db_password
+  _DB_NAME: your_db_name
+  _CLOUD_SQL_CONNECTION_NAME: your_cloud_sql_connection_name
+
+images:
+  - 'gcr.io/$PROJECT_ID/trial'  # Replace with your desired image name
