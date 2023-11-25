@@ -10,7 +10,8 @@ steps:
       - '-t'
       - 'gcr.io/$PROJECT_ID/trial'  # Replace with your desired image name
       - '.'
-
+options:
+  logging: CLOUD_LOGGING_ONLY
 substitutions:
   _FLASK_SECRET_KEY: your_flask_secret_key
   _DB_USER: your_db_user
