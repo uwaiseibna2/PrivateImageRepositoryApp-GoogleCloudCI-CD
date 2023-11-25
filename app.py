@@ -27,6 +27,10 @@ class User(UserMixin):
         self.username = username
         self.password = password
 
+def generate_unique_filename(filename):
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    return f"{current_time}_{filename}"
+
 @login_manager.user_loader
 def load_user(user_id):
     cursor = connection.cursor()
