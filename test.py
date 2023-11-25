@@ -3,6 +3,7 @@ from app import app, db, User
 from flask_login import current_user
 import random
 import os
+from flask import Flask
 class TestFlaskApp(unittest.TestCase):
     def setUp(self):
         self.app_context = app.app_context()
