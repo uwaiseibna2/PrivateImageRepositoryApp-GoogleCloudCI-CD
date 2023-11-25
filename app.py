@@ -1,63 +1,56 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from google.cloud import storage
 from datetime import datetime
-from werkzeug.utils import secure_filename
-from PIL import Image
-from PIL.ExifTags import TAGS
+import pymysql
 from google.cloud import storage
-
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY")  # Load secret key from environment variable
-
-# Database configuration
-db_user = os.environ.get("DB_USER")
-db_pass = os.environ.get("DB_PASS")
-db_name = os.environ.get("DB_NAME")
-cloud_sql_connection_name = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
-
-# Adjust the cloud SQL connection settings
-db_host = '/cloudsql/' + cloud_sql_connection_name  # Cloud SQL Proxy connection
-
-
-# Database URI for SQLAlchemy
-db_uri = f"mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}"
-
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+app.secret_key = 'beryberysecret'
+bucket_name='project-2-images'
+connection = pymysql.connect(
+    unix_socket='/cloudsql/group-21-project-2:us-central1:users',
+    user='root',
+    password='secretpass',
+    database='users-db',
+    cursorclass=pymysql.cursors.DictCursor
+)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# User model for database
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-def generate_unique_filename(filename):
-    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"{current_time}_{filename}"
-# Flask-Login user loader function
+class User(UserMixin):
+    def __init__(self, user_id, username, password):
+        self.id = user_id
+        self.username = username
+        self.password = password
+
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM User WHERE id=%s", (user_id,))
+    user_data = cursor.fetchone()
 
-# Routes
+    if user_data:
+        return User(user_data['id'], user_data['username'], user_data['password'])
+    else:
+        return None
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        cursor = connection.cursor()
 
-        if user and check_password_hash(user.password, password):
-            login_user(user)
+        cursor.execute("SELECT * FROM User WHERE username=%s", (username,))
+        user = cursor.fetchone()
+
+        if user and check_password_hash(user['password'], password):
+            user_id = user['id']
+            login_user(User(user['id'], user['username'], user['password']))
             return redirect(url_for('home'))
         else:
             return "Invalid username or password"
@@ -70,17 +63,23 @@ def register():
         username = request.form['username']
         password = request.form['password']
         hashed_password = generate_password_hash(password)
+        cursor = connection.cursor()
 
-        existing_user = User.query.filter_by(username=username).first()
+        cursor.execute("SELECT * FROM User WHERE username=%s", (username,))
+        existing_user = cursor.fetchone()
+
         if existing_user:
             return "This username already exists. Please choose a different one."
+        else:
+            cursor.execute("INSERT INTO User (username, password) VALUES (%s, %s)", (username, hashed_password))
+            connection.commit()
 
-        new_user = User(username=username, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-
-        login_user(new_user)
-        return redirect(url_for('home'))
+            cursor.execute("SELECT * FROM User WHERE username=%s", (username,))
+            new_user = cursor.fetchone()
+            if new_user:
+                user_id = new_user['id']
+                login_user(User(new_user['id'], new_user['username'], new_user['password']))
+                return redirect(url_for('home'))
 
     return render_template('register.html', register=True)
 
@@ -93,7 +92,7 @@ def logout():
 @app.route('/')
 @login_required
 def home():
-    # Initialize the Google Cloud Storage client
+        # Initialize the Google Cloud Storage client
     storage_client = storage.Client()
 
     # Get a list of all objects (images) in the GCS bucket
@@ -201,9 +200,24 @@ def download(filename):
 @app.errorhandler(401)
 def unauthorized(error):
     return redirect(url_for('login'))
-if __name__ == "__main__":
-    # Move the db.create_all() method here before running the app
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
 
+# Create a cursor object
+cursor = connection.cursor()
+
+# Define the table creation SQL query
+create_table_query = '''
+CREATE TABLE IF NOT EXISTS User (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(200) NOT NULL
+);
+'''
+
+# Execute the query to create the table
+cursor.execute(create_table_query)
+
+# Commit changes and close the cursor and connection
+connection.commit()
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
