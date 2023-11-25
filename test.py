@@ -8,18 +8,18 @@ class TestFlaskApp(unittest.TestCase):
         self.app_context = app.app_context()
         self.app_context.push()
         app.config['TESTING'] = True
-        db_user = 'root'
-        db_pass = 'secretpass'
-        db_name ='users-db'
-        cloud_sql_connection_name = os.environ.get("DB_")
-        db_host='127.0.0.1'
-        db_port='3306'
-        # mysql+pymysql://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
+        app = Flask(__name__)
+        app.secret_key = os.environ.get("FLASK_SECRET_KEY")  # Load secret key from environment variable
 
-        # Use the fetched credentials to form the SQLAlchemy database URI
-        #mysql+pymysql://<db_user>:<db_pass>@/<db_name>?unix_socket=<socket_path>/<cloud_sql_instance_name>
+        # Database configuration
+        db_user = os.environ.get("DB_USER")
+        db_pass = os.environ.get("DB_PASS")
+        db_name = os.environ.get("DB_NAME")
+        cloud_sql_connection_name = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
 
-        db_uri = f'mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}'
+        # Adjust the cloud SQL connection settings
+        db_host = '/cloudsql/' + cloud_sql_connection_name  # Cloud SQL Proxy connection
+        db_uri = f"mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}"
         # Update the configuration
         app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
         db.create_all()
