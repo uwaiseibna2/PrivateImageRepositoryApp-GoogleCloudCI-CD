@@ -5,7 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import pymysql
 from google.cloud import storage
-
+from werkzeug.utils import secure_filename
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 app = Flask(__name__)
 app.secret_key = 'beryberysecret'
@@ -20,16 +22,14 @@ connection = pymysql.connect(
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-
+def generate_unique_filename(filename):
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    return f"{current_time}_{filename}"
 class User(UserMixin):
     def __init__(self, user_id, username, password):
         self.id = user_id
         self.username = username
         self.password = password
-
-def generate_unique_filename(filename):
-    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"{current_time}_{filename}"
 
 @login_manager.user_loader
 def load_user(user_id):
