@@ -1,35 +1,79 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import patch
+from flask import Flask
 
-class TestUserAuth(unittest.TestCase):
+# Create a dummy Flask app for testing purposes
+app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return 'Home Route'
+
+@app.route('/login')
+def login():
+    return 'Login Route'
+
+@app.route('/logout')
+def logout():
+    return 'Logout Route'
+
+@app.route('/register')
+def register():
+    return 'Register Route'
+
+@app.route('/upload')
+def upload():
+    return 'Upload Route'
+
+@app.route('/image/<filename>')
+def image(filename):
+    return f'Image Route: {filename}'
+
+@app.route('/download/<filename>')
+def download(filename):
+    return f'Download Route: {filename}'
+
+class FlaskTestCase(unittest.TestCase):
     def setUp(self):
-        # You can initialize variables or create mocks here
-        pass
+        self.app = app.test_client()
 
     def tearDown(self):
-        # Clean up after each test if needed
         pass
 
-    def test_login_page(self):
-        # Simulate a GET request to the login route and check the status code
-        response = self.simulate_get_request('/login')
+    def test_home_route(self):
+        response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
-        # Add more assertions to validate elements on the login page if needed
+        self.assertEqual(response.data.decode('utf-8'), 'Home Route')
 
-    def test_register_page(self):
-        # Simulate a GET request to the register route and check the status code
-        response = self.simulate_get_request('/register')
+    def test_login_route(self):
+        response = self.app.get('/login')
         self.assertEqual(response.status_code, 200)
-        # Add more assertions to validate elements on the registration page if needed
+        self.assertEqual(response.data.decode('utf-8'), 'Login Route')
 
-    # Helper method to simulate GET requests (replace this with your actual method)
-    def simulate_get_request(self, route):
-        # Simulate a GET request and return a mock response
-        mock_response = MagicMock()
-        mock_response.status_code = 200  # Set the status code as needed
-        # You can add more attributes or methods to the mock_response as required for testing
-        return mock_response
+    def test_logout_route(self):
+        response = self.app.get('/logout')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode('utf-8'), 'Logout Route')
+
+    def test_register_route(self):
+        response = self.app.get('/register')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode('utf-8'), 'Register Route')
+
+    def test_upload_route(self):
+        response = self.app.get('/upload')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode('utf-8'), 'Upload Route')
+
+    def test_image_route(self):
+        response = self.app.get('/image/test_image')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode('utf-8'), 'Image Route: test_image')
+
+    def test_download_route(self):
+        response = self.app.get('/download/test_image')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode('utf-8'), 'Download Route: test_image')
 
 if __name__ == '__main__':
     unittest.main()
