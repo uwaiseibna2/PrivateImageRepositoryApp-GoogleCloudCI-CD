@@ -55,12 +55,12 @@ def login():
         if user and check_password_hash(user['password'], password):
             user_id = user['id']
             login_user(User(user['id'], user['username'], user['password']))
-            return redirect(url_for('home'))
+            return redirect(url_for('home'))git config --global init.defaultBranch <name>
         else:
             return "Invalid username or password"
 
     return render_template('login.html')
-#comment
+#commentasdf
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
