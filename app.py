@@ -60,7 +60,7 @@ def login():
             return "Invalid username or password"
 
     return render_template('login.html')
-
+#comment
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
