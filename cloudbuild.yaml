@@ -10,3 +10,5 @@ steps:
       - '--platform=managed'
       - '--region=us-central1'
       - '--allow-unauthenticated'  # Adjust this based on your authentication needs
+options:
+  logging: CLOUD_LOGGING_ONLY
