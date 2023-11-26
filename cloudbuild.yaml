@@ -28,7 +28,7 @@ steps:
            '--region', 'us-central1', '--platform', 'managed', 
            '--allow-unauthenticated']
   # [END cloudbuild_python_deploy_yaml]
-  options:
+options:
   logging: CLOUD_LOGGING_ONLY
 # [START cloudbuild_python_logs_yaml]
 # Save test logs to Google Cloud Storage
