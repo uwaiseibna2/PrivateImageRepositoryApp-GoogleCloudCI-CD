@@ -10,12 +10,12 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 
 app = Flask(__name__)
-app.secret_key = 'beryberysecret'
+app.secret_key = os.environ.get('APP_SECRET_KEY')
 bucket_name='project-2-images'
 connection = pymysql.connect(
     unix_socket='/cloudsql/group-21-project-2:us-central1:users',
-    user='root',
-    password='secretpass',
+    user=os.environ.get('DB_USER'),
+    password=os.environ.get('DB_PASSWORD'),
     database='users-db',
     cursorclass=pymysql.cursors.DictCursor
 )

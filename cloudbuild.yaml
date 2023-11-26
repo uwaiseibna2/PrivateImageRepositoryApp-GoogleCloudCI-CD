@@ -1,44 +1,53 @@
 steps:
-  # Install dependencies
+  # Retrieve Secrets from Secret Manager
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret="DB_USER" > /workspace/db_user.txt
+        gcloud secrets versions access latest --secret="DB_PASSWORD" > /workspace/db_password.txt
+        gcloud secrets versions access latest --secret="APP_SECRET_KEY" > /workspace/app_secret_key.txt
+        # Add more secrets as needed
+
+  # Set Environment Variables using retrieved secrets
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        export DB_USER=$(cat /workspace/db_user.txt)
+        export DB_PASSWORD=$(cat /workspace/db_password.txt)
+        export APP_SECRET_KEY=$(cat /workspace/app_secret_key.txt)
+        # Add more variables as needed
+
+  # Continue with the existing build steps
   - name: python
     entrypoint: pip
     args: ["install", "-r", "requirements.txt", "--user"]
-# [END cloudbuild_python_dependencies_yaml]
-#test 
+
   - name: python
     entrypoint: python
     args: ["test.py"]
 
-  # [START cloudbuild_python_image_yaml]
-  # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 
            'us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', '.']
-  # [END cloudbuild_python_image_yaml]
 
-  # [START cloudbuild_python_push_yaml]
-  # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push',  'us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}']
-  # [END cloudbuild_python_push_yaml]
-  
-  # [START cloudbuild_python_deploy_yaml]
-  # Deploy to Cloud Run
+
   - name: google/cloud-sdk
     args: [
-      'gcloud', 'run', 'deploy', 'final-proj', 
+      'gcloud', 'run', 'deploy', 'final-proj${SHORT_SHA}', 
       '--image=us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', 
       '--region', 'us-east1', '--platform', 'managed', 
       '--allow-unauthenticated',
       '--add-cloudsql-instances', 'group-21-project-2:us-central1:users'
     ]
-  # [END cloudbuild_python_deploy_yaml]
+
 options:
   logging: CLOUD_LOGGING_ONLY
-# [START cloudbuild_python_logs_yaml]
 
-# Store images in Google Artifact Registry 
 images:
   - us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}
-
-#endofyaml
