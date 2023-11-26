@@ -4,8 +4,10 @@ steps:
     entrypoint: pip
     args: ["install", "-r", "requirements.txt", "--user"]
 # [END cloudbuild_python_dependencies_yaml]
-
-
+#test 
+  - name: python
+    entrypoint: python
+    args: ["test.py"]
 
   # [START cloudbuild_python_image_yaml]
   # Docker Build
