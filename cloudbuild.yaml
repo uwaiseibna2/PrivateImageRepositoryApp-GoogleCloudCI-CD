@@ -1,5 +1,5 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args: ['build', '-t', 'gcr.io/group-21-project-2/testv1', '.']
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
