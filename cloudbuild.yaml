@@ -38,3 +38,5 @@ options:
 # Store images in Google Artifact Registry 
 images:
   - us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}
+
+#endofyaml
