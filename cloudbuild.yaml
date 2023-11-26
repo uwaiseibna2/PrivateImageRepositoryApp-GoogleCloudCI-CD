@@ -1,0 +1,12 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/group-21-project-2/testv1', '.']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'test-image'
+      - '--image=gcr.io/group-21-project-2/testv1'
+      - '--platform=managed'
+      - '--region=YOUR_REGION'
+      - '--allow-unauthenticated'  # Adjust this based on your authentication needs
