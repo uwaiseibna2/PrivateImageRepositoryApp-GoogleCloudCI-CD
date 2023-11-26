@@ -22,14 +22,14 @@ steps:
   
   # [START cloudbuild_python_deploy_yaml]
   # Deploy to Cloud Run
-- name: google/cloud-sdk
-  args: [
-    'gcloud', 'run', 'deploy', 'final-proj-${SHORT_SHA}', 
-    '--image=us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', 
-    '--region', 'us-east1', '--platform', 'managed', 
-    '--allow-unauthenticated',
-    '--add-cloudsql-instances', 'group-21-project-2:us-central1:users'
-  ]
+  - name: google/cloud-sdk
+    args: [
+      'gcloud', 'run', 'deploy', 'final-proj-${SHORT_SHA}', 
+      '--image=us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', 
+      '--region', 'us-east1', '--platform', 'managed', 
+      '--allow-unauthenticated',
+      '--add-cloudsql-instances', 'group-21-project-2:us-central1:users'
+    ]
   # [END cloudbuild_python_deploy_yaml]
 options:
   logging: CLOUD_LOGGING_ONLY
