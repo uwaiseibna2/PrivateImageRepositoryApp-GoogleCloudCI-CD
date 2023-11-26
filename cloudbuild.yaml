@@ -8,5 +8,5 @@ steps:
       - 'test-image'
       - '--image=gcr.io/group-21-project-2/testv1'
       - '--platform=managed'
-      - '--region=YOUR_REGION'
+      - '--region=us-central1'
       - '--allow-unauthenticated'  # Adjust this based on your authentication needs
