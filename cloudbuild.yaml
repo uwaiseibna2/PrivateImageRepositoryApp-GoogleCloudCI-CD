@@ -1,27 +1,22 @@
 steps:
-  # Install dependencies
   - name: python
     entrypoint: pip
     args: ["install", "-r", "requirements.txt", "--user"]
-# [END cloudbuild_python_dependencies_yaml]
+    env:
+      - 'APP_SECRET_KEY=beryberysecret'
+      - 'BUCKET_NAME=project-2-images'
+      - 'DB_SOCKET=/cloudsql/group-21-project-2:us-central1:users'
+      - 'DB_USER=root'
+      - 'DB_PASSWORD=secretpass'
+      - 'DB_NAME=users-db'
 
-
-
-  # [START cloudbuild_python_image_yaml]
-  # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 
            'us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', '.']
-  # [END cloudbuild_python_image_yaml]
 
-  # [START cloudbuild_python_push_yaml]
-  # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push',  'us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}']
-  # [END cloudbuild_python_push_yaml]
-  
-  # [START cloudbuild_python_deploy_yaml]
-  # Deploy to Cloud Run
+
   - name: google/cloud-sdk
     args: [
       'gcloud', 'run', 'deploy', 'final-proj-${SHORT_SHA}', 
@@ -30,13 +25,9 @@ steps:
       '--allow-unauthenticated',
       '--add-cloudsql-instances', 'group-21-project-2:us-central1:users'
     ]
-  # [END cloudbuild_python_deploy_yaml]
+
 options:
   logging: CLOUD_LOGGING_ONLY
-# [START cloudbuild_python_logs_yaml]
 
-# Store images in Google Artifact Registry 
 images:
   - us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}
-
-#endofyaml
