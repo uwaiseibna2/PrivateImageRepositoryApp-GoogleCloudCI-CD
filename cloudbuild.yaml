@@ -23,7 +23,7 @@ steps:
   # [START cloudbuild_python_deploy_yaml]
   # Deploy to Cloud Run
   - name: google/cloud-sdk
-    args: ['gcloud', 'run', 'deploy', 'helloworld-${SHORT_SHA}', 
+    args: ['gcloud', 'run', 'deploy', 'final-proj-${SHORT_SHA}', 
            '--image=us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/myimage:${SHORT_SHA}', 
            '--region', 'us-east1', '--platform', 'managed', 
            '--allow-unauthenticated']
