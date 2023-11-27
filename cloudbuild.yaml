@@ -1,3 +1,8 @@
+substitutions:
+  _DB_USER: 'your_db_user'
+  _DB_PASSWORD: 'your_db_password'
+  _APP_SECRET_KEY: 'your_app_secret'
+
 steps:
   # Retrieve Secrets from Secret Manager
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -24,6 +29,8 @@ steps:
           --build-arg DB_PASSWORD="${DB_PASSWORD}" \
           --build-arg APP_SECRET_KEY="${APP_SECRET_KEY}" \
           -t us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA} .
+        # Continue with your build steps...
+
   # Continue with your build steps...
 
   - name: python
