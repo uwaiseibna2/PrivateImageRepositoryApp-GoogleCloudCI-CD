@@ -128,7 +128,6 @@ def home():
 
 
 @app.route('/upload', methods=['GET', 'POST'])
-@login_required
 def upload():
     if request.method == 'POST':
         if 'file' not in request.files:
