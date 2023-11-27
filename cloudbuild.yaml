@@ -13,7 +13,6 @@ steps:
         gcloud secrets versions access latest --secret="DB_USER" > /workspace/db_user.txt
         gcloud secrets versions access latest --secret="DB_PASSWORD" > /workspace/db_password.txt
         gcloud secrets versions access latest --secret="APP_SECRET_KEY" > /workspace/app_secret_key.txt
-        # Add more secrets as needed
 
   # Set Environment Variables using retrieved secrets
   - name: 'gcr.io/cloud-builders/docker'
@@ -29,8 +28,8 @@ steps:
           --build-arg DB_PASSWORD="${DB_PASSWORD}" \
           --build-arg APP_SECRET_KEY="${APP_SECRET_KEY}" \
           -t us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA} .
-        # Continue with your build steps...
-
+    
+    
   # Continue with your build steps...
 
   - name: python
