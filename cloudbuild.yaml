@@ -1,4 +1,34 @@
+<<<<<<< HEAD
 steps:
+=======
+
+steps:
+  # Retrieve Secrets from Secret Manager
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret="DB_USER" > /workspace/db_user.txt
+        gcloud secrets versions access latest --secret="DB_PASSWORD" > /workspace/db_password.txt
+        gcloud secrets versions access latest --secret="APP_SECRET_KEY" > /workspace/app_secret_key.txt
+
+  # Set Environment Variables using retrieved secrets
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        export DB_USER=$(cat /workspace/db_user.txt)
+        export DB_PASSWORD=$(cat /workspace/db_password.txt)
+        export APP_SECRET_KEY=$(cat /workspace/app_secret_key.txt)
+        docker build \
+          --build-arg DB_USER="${_DB_USER}" \
+          --build-arg DB_PASSWORD="${_DB_PASSWORD}" \
+          --build-arg APP_SECRET_KEY="${_APP_SECRET_KEY}" \
+          -t us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA} .
+
+>>>>>>> 8b857e2bfb098382dc1e1cb39243915944cbca73
   - name: python
     entrypoint: pip
     args: ["install", "-r", "requirements.txt", "--user"]
@@ -20,7 +50,10 @@ steps:
       '--image=us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', 
       '--region', 'us-east1', '--platform', 'managed', 
       '--allow-unauthenticated',
-      '--add-cloudsql-instances', 'group-21-project-2:us-central1:users'
+      '--add-cloudsql-instances', 'group-21-project-2:us-central1:users',
+      '--set-env-vars=DB_USER=${_DB_USER}',
+      '--set-env-vars=DB_PASSWORD=${_DB_PASSWORD}',
+      '--set-env-vars=APP_SECRET_KEY=${_APP_SECRET_KEY}',
     ]
 
 options:
