@@ -8,14 +8,21 @@ from google.cloud import storage
 from werkzeug.utils import secure_filename
 from PIL import Image
 from PIL.ExifTags import TAGS
-
+from google.cloud import secretmanager
 app = Flask(__name__)
-app.secret_key = os.environ.get('APP_SECRET_KEY')
+
 bucket_name='project-2-images'
+def get_secret(secret_name):
+    client = secretmanager.SecretManagerServiceClient()
+    secret_path = f"projects/group-21-project-2/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(request={"name": secret_path})
+    return response.payload.data.decode("UTF-8")
+
+app.secret_key=get_secret('APP_SECRET_KEY')
 connection = pymysql.connect(
     unix_socket='/cloudsql/group-21-project-2:us-central1:users',
-    user=os.environ.get('DB_USER'),
-    password=os.environ.get('DB_PASSWORD'),
+    user=get_secret('DB_USER'),
+    password=get_secret('DB_PASSWORD'),
     database='users-db',
     cursorclass=pymysql.cursors.DictCursor
 )

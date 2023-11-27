@@ -1,38 +1,4 @@
-substitutions:
-  _DB_USER: 'my_db_user'
-  _DB_PASSWORD: 'my_db_password'
-  _APP_SECRET_KEY: 'my_app_secret'
-
-
 steps:
-  # Retrieve Secrets from Secret Manager
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        gcloud secrets versions access latest --secret="DB_USER" > /workspace/db_user.txt
-        gcloud secrets versions access latest --secret="DB_PASSWORD" > /workspace/db_password.txt
-        gcloud secrets versions access latest --secret="APP_SECRET_KEY" > /workspace/app_secret_key.txt
-
-  # Set Environment Variables using retrieved secrets
-  - name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        export DB_USER=$(cat /workspace/db_user.txt)
-        export DB_PASSWORD=$(cat /workspace/db_password.txt)
-        export APP_SECRET_KEY=$(cat /workspace/app_secret_key.txt)
-        docker build \
-          --build-arg DB_USER="${DB_USER}" \
-          --build-arg DB_PASSWORD="${DB_PASSWORD}" \
-          --build-arg APP_SECRET_KEY="${APP_SECRET_KEY}" \
-          -t us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA} .
-    
-    
-  # Continue with your build steps...
-
   - name: python
     entrypoint: pip
     args: ["install", "-r", "requirements.txt", "--user"]
