@@ -25,13 +25,10 @@ steps:
         export DB_PASSWORD=$(cat /workspace/db_password.txt)
         export APP_SECRET_KEY=$(cat /workspace/app_secret_key.txt)
         docker build \
-          --build-arg DB_USER="${DB_USER}" \
-          --build-arg DB_PASSWORD="${DB_PASSWORD}" \
-          --build-arg APP_SECRET_KEY="${APP_SECRET_KEY}" \
+          --build-arg DB_USER="${_DB_USER}" \
+          --build-arg DB_PASSWORD="${_DB_PASSWORD}" \
+          --build-arg APP_SECRET_KEY="${_APP_SECRET_KEY}" \
           -t us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA} .
-    
-    
-  # Continue with your build steps...
 
   - name: python
     entrypoint: pip
