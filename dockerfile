@@ -8,14 +8,14 @@ WORKDIR /app
 COPY . /app
 
 # Arguments to pass secrets during build
-ARG DB_USER
-ARG DB_PASSWORD
-ARG APP_SECRET_KEY
+ARG _DB_USER
+ARG _DB_PASSWORD
+ARG _APP_SECRET_KEY
 
 # Set environment variables in the container (optional)
-ENV DB_USER=$DB_USER \
-    DB_PASSWORD=$DB_PASSWORD \
-    APP_SECRET_KEY=$APP_SECRET_KEY
+ENV DB_USER=$_DB_USER \
+    DB_PASSWORD=$_DB_PASSWORD \
+    APP_SECRET_KEY=$_APP_SECRET_KEY
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
