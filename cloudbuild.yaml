@@ -1,3 +1,9 @@
+substitutions:
+  _DB_USER: 'my_db_user'
+  _DB_PASSWORD: 'my_db_password'
+  _APP_SECRET_KEY: 'my_app_secret'
+
+
 steps:
   # Retrieve Secrets from Secret Manager
   - name: 'gcr.io/cloud-builders/gcloud'
