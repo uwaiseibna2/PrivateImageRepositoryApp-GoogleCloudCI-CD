@@ -46,7 +46,10 @@ steps:
       '--image=us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', 
       '--region', 'us-east1', '--platform', 'managed', 
       '--allow-unauthenticated',
-      '--add-cloudsql-instances', 'group-21-project-2:us-central1:users'
+      '--add-cloudsql-instances', 'group-21-project-2:us-central1:users',
+      '--set-env-vars=DB_USER=${_DB_USER}',
+      '--set-env-vars=DB_PASSWORD=${_DB_PASSWORD}',
+      '--set-env-vars=APP_SECRET_KEY=${_APP_SECRET_KEY}',
     ]
 
 options:
