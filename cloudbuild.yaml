@@ -16,7 +16,7 @@ steps:
 
   - name: google/cloud-sdk
     args: [
-      'gcloud', 'run', 'deploy', 'final-proj${SHORT_SHA}', 
+      'gcloud', 'run', 'deploy', 'final-proj', 
       '--image=us-east1-docker.pkg.dev/${PROJECT_ID}/testrepo/appimage:${SHORT_SHA}', 
       '--region', 'us-east1', '--platform', 'managed', 
       '--allow-unauthenticated',
