@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for,flash
+from flask import Flask, render_template, request, redirect, url_for,flash,send_file
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -182,9 +182,8 @@ def upload():
 @app.route('/image/<filename>', methods=['GET', 'POST'])
 def image(filename):
     storage_client = storage.Client()
-    gcs_url = f'https://storage.googleapis.com/{bucket_name}/{filename}'
     bucket = storage_client.bucket(bucket_name)
-    blob = bucket.get_blob(filename)
+    blob = bucket.blob(filename)
 
     if blob.exists():
         image_metadata = blob.metadata
@@ -194,20 +193,24 @@ def image(filename):
     if request.method == 'POST':
         # Delete image if the delete button is pressed
         if 'delete_image' in request.form:
-
             blob.delete()  # Delete the image blob
             return redirect(url_for('home'))
 
-    return render_template('image.html', filename=filename, gcs_url=gcs_url, image_metadata=image_metadata)
-
+    # Return the rendered template along with image metadata
+    return render_template('image.html', filename=filename, image_metadata=image_metadata)
 
 @app.route('/download/<filename>')
 def download(filename):
-    # Construct the GCS URL for the file to be downloaded
-    gcs_url = f'https://storage.googleapis.com/{bucket_name}/{filename}'
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(filename)
 
-    # Redirect the user to the GCS URL for download
-    return redirect(gcs_url)
+    if blob.exists():
+        # Serve the file for download
+        return send_file(blob.download_as_bytes(), attachment_filename=filename, as_attachment=True)
+    else:
+        return "File not found"
+
 @app.errorhandler(401)
 def unauthorized(error):
     return redirect(url_for('login'))

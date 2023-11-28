@@ -76,7 +76,15 @@
         
         <a href="{{ url_for('download', filename=filename) }}" class="download-btn">Download Image</a>
         <br><br>
-        <img src="{{ gcs_url }}" alt="{{ filename }}">
+
+        <!-- Display the image -->
+        {% if image_metadata.Status != 'Image not found in GCS bucket' %}
+            <img src="{{ url_for('download', filename=filename) }}" alt="{{ filename }}">
+        {% else %}
+            <p>{{ image_metadata.Status }}</p>
+        {% endif %}
+
+        <!-- Delete image form -->
         <form action="" method="POST">
             <input type="submit" name="delete_image" value="Delete Image" class="delete-btn">
         </form>
