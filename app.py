@@ -9,6 +9,13 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from PIL.ExifTags import TAGS
 from google.cloud import secretmanager
+from google.oauth2 import service_account
+
+# Define the path to your service account key JSON file
+
+
+# Explicitly create credentials using the key file
+
 app = Flask(__name__)
 
 
@@ -26,7 +33,10 @@ connection = pymysql.connect(
     database=get_secret('DB_NAME'),
     cursorclass=pymysql.cursors.DictCursor
 )
+credentials = service_account.Credentials.from_service_account_file(get_secret('auth_secret'))
 
+# Create a storage client with the specified credentials
+storage_client = storage.Client(credentials=credentials)
 login_manager = LoginManager()
 login_manager.init_app(app)
 def generate_unique_filename(filename):
@@ -102,8 +112,6 @@ def logout():
 @app.route('/')
 @login_required
 def home():
-        # Initialize the Google Cloud Storage client
-    storage_client = storage.Client()
 
     # Get a list of all objects (images) in the GCS bucket
     bucket = storage_client.bucket(bucket_name)
@@ -181,7 +189,6 @@ def upload():
 
 @app.route('/image/<filename>', methods=['GET', 'POST'])
 def image(filename):
-    storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(filename)
 
@@ -202,7 +209,6 @@ def image(filename):
 
 @app.route('/download/<filename>')
 def download(filename):
-    storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(filename)
 
