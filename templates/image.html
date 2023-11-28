@@ -74,14 +74,9 @@
             {% endfor %}
         </table>
         
-        <a href="{{ signed_url }}" class="download-btn">Download Image</a>
+        <a href="{{ url_for('download', filename=filename) }}" class="download-btn">Download Image</a>
         <br><br>
-        {% if signed_url %}
-            <img src="{{ signed_url }}" alt="{{ filename }}">
-        {% else %}
-            <p>Image not found or access denied.</p>
-        {% endif %}
-        
+        <img src="{{ gcs_url }}" alt="{{ filename }}">
         <form action="" method="POST">
             <input type="submit" name="delete_image" value="Delete Image" class="delete-btn">
         </form>

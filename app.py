@@ -1,5 +1,5 @@
-import os
-from flask import Flask, render_template, request, redirect, url_for,flash,abort
+import os,json
+from flask import Flask, render_template, request, redirect, url_for,flash
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -9,12 +9,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from PIL.ExifTags import TAGS
 from google.cloud import secretmanager
-from google.oauth import service_account
-
-# Define the path to your service account key JSON file
-
-
-# Explicitly create credentials using the key file
+from google.oauth2 import service_account
 
 app = Flask(__name__)
 
@@ -33,10 +28,10 @@ connection = pymysql.connect(
     database=get_secret('DB_NAME'),
     cursorclass=pymysql.cursors.DictCursor
 )
-credentials = service_account.Credentials.from_service_account_info(get_secret('auth_secret'))
-
-# Create a storage client with the specified credentials
-storage_client = storage.Client(credentials=credentials)
+cred=json.loads(get_secret('auth_secret'))
+cred=service_account.Credentials.from_service_account_info(cred)
+storage_client=storage.Client(credentials=cred)
+bucket=storage_client.bucket(bucket_name)
 login_manager = LoginManager()
 login_manager.init_app(app)
 def generate_unique_filename(filename):
@@ -113,8 +108,6 @@ def logout():
 @login_required
 def home():
 
-    # Get a list of all objects (images) in the GCS bucket
-    bucket = storage_client.bucket(bucket_name)
     blobs = bucket.list_blobs()
 
     # Filter images to display only those associated with the current user
@@ -147,7 +140,6 @@ def upload():
 
         if file:
             filename = generate_unique_filename(secure_filename(file.filename))
-            bucket = storage_client.bucket(bucket_name)
             blob = bucket.blob(filename)
             blob.upload_from_file(file)
             exif_data = {}
@@ -188,34 +180,33 @@ def upload():
 
 @app.route('/image/<filename>', methods=['GET', 'POST'])
 def image(filename):
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(filename)
 
+    
+    blob = bucket.get_blob(filename)
+    gcs_url = blob.generate_signed_url(3600)
     if blob.exists():
         image_metadata = blob.metadata
-        signed_url = blob.generate_signed_url(3600)  # Set the URL expiration time
     else:
         image_metadata = {'Status': 'Image not found in GCS bucket'}
-        signed_url = None
 
     if request.method == 'POST':
+        # Delete image if the delete button is pressed
         if 'delete_image' in request.form:
+
             blob.delete()  # Delete the image blob
             return redirect(url_for('home'))
 
-    return render_template('image.html', filename=filename, image_metadata=image_metadata, signed_url=signed_url)
+    return render_template('image.html', filename=filename, gcs_url=gcs_url, image_metadata=image_metadata)
 
 
 @app.route('/download/<filename>')
 def download(filename):
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(filename)
+    # Construct the GCS URL for the file to be downloaded
+    blob = bucket.get_blob(filename)
+    gcs_url = blob.generate_signed_url(3600)
 
-    if blob.exists() and blob.metadata.get('associated_user') == current_user.username:
-        signed_url = blob.generate_signed_url(3600)  # Set the URL expiration time
-        return redirect(signed_url)
-    else:
-        abort(403)
+    # Redirect the user to the GCS URL for download
+    return redirect(gcs_url)
 @app.errorhandler(401)
 def unauthorized(error):
     return redirect(url_for('login'))
