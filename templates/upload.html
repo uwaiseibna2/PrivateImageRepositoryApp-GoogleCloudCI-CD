@@ -61,22 +61,33 @@
     </style>
 </head>
 <body>
-
-
     <h2>Upload Image</h2>
     <div class="upload-container">
         <form method="POST" enctype="multipart/form-data" id="upload-form">
             <br><br>
             <label for="file-input" class="browse-btn">Browse</label>
-            <br><br>
+
             <span id="image-name"></span>
+            <br><br>
             <input type="file" name="file" id="file-input">
             <input type="submit" value="Upload" class="upload-btn">
         </form>
-
     </div>
     <div id="progress">
         <div id="upload-progress"></div>
     </div>
+
+    <script>
+        document.getElementById('file-input').addEventListener('change', function() {
+            const fileInput = document.getElementById('file-input');
+            const imageName = document.getElementById('image-name');
+
+            if (fileInput.files.length > 0) {
+                imageName.textContent = 'Selected file: ' + fileInput.files[0].name;
+            } else {
+                imageName.textContent = '';
+            }
+        });
+    </script>
 </body>
 </html>
