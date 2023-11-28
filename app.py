@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for,flash,send_file
+from flask import Flask, render_template, request, redirect, url_for,flash,abort
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -187,17 +187,18 @@ def image(filename):
 
     if blob.exists():
         image_metadata = blob.metadata
+        signed_url = blob.generate_signed_url(expires_in=3600)  # Set the URL expiration time
     else:
         image_metadata = {'Status': 'Image not found in GCS bucket'}
+        signed_url = None
 
     if request.method == 'POST':
-        # Delete image if the delete button is pressed
         if 'delete_image' in request.form:
             blob.delete()  # Delete the image blob
             return redirect(url_for('home'))
 
-    # Return the rendered template along with image metadata
-    return render_template('image.html', filename=filename, image_metadata=image_metadata)
+    return render_template('image.html', filename=filename, image_metadata=image_metadata, signed_url=signed_url)
+
 
 @app.route('/download/<filename>')
 def download(filename):
@@ -205,12 +206,11 @@ def download(filename):
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(filename)
 
-    if blob.exists():
-        # Serve the file for download
-        return send_file(blob.download_as_bytes(), attachment_filename=filename, as_attachment=True)
+    if blob.exists() and blob.metadata.get('associated_user') == current_user.username:
+        signed_url = blob.generate_signed_url(expires_in=3600)  # Set the URL expiration time
+        return redirect(signed_url)
     else:
-        return "File not found"
-
+        abort(403)
 @app.errorhandler(401)
 def unauthorized(error):
     return redirect(url_for('login'))

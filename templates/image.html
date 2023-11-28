@@ -74,17 +74,14 @@
             {% endfor %}
         </table>
         
-        <a href="{{ url_for('download', filename=filename) }}" class="download-btn">Download Image</a>
+        <a href="{{ signed_url }}" class="download-btn">Download Image</a>
         <br><br>
-
-        <!-- Display the image -->
-        {% if image_metadata.Status != 'Image not found in GCS bucket' %}
-            <img src="{{ url_for('download', filename=filename) }}" alt="{{ filename }}">
+        {% if signed_url %}
+            <img src="{{ signed_url }}" alt="{{ filename }}">
         {% else %}
-            <p>{{ image_metadata.Status }}</p>
+            <p>Image not found or access denied.</p>
         {% endif %}
-
-        <!-- Delete image form -->
+        
         <form action="" method="POST">
             <input type="submit" name="delete_image" value="Delete Image" class="delete-btn">
         </form>
