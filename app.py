@@ -33,7 +33,7 @@ connection = pymysql.connect(
     database=get_secret('DB_NAME'),
     cursorclass=pymysql.cursors.DictCursor
 )
-credentials = service_account.Credentials.from_service_account_file(get_secret('auth_secret'))
+credentials = service_account.Credentials.from_service_account_info(get_secret('auth_secret'))
 
 # Create a storage client with the specified credentials
 storage_client = storage.Client(credentials=credentials)
@@ -147,7 +147,6 @@ def upload():
 
         if file:
             filename = generate_unique_filename(secure_filename(file.filename))
-            storage_client = storage.Client()
             bucket = storage_client.bucket(bucket_name)
             blob = bucket.blob(filename)
             blob.upload_from_file(file)
