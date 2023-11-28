@@ -24,17 +24,35 @@
             font-weight: bold;
         }
 
+        .image-table {
+            border-collapse: collapse;
+            width: 50%;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .image-table th,
+        .image-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center; /* Center align text */
+        }
+
+        .image-table th {
+            background-color: #f2f2f2;
+        }
+
         .image-list {
             list-style: none;
             padding: 0;
+            margin: 0;
             text-align: center;
-            margin-left: 0;
-            padding-left: 0;
         }
 
         .image-list li {
             margin-bottom: 10px;
-            display: inline-block;
+            text-align: center;
         }
 
         .button {
@@ -50,7 +68,6 @@
         .button:hover {
             background-color: #45a049;
         }
-
     </style>
 </head>
 <body>
@@ -60,11 +77,16 @@
         Logged in as {{ username }}
         <a href="/logout" class="button">Logout</a>
     </div>
-    <ul class="image-list">
+    <table class="image-table">
+        <tr>
+            <th>Image Files</th>
+        </tr>
         {% for filename in image_files %}
-            <li><a href="{{ url_for('image', filename=filename) }}">{{ filename }}</a></li>
+            <tr>
+                <td style="text-align: center;"><a href="{{ url_for('image', filename=filename) }}">{{ filename }}</a></td>
+            </tr>
         {% endfor %}
-    </ul>
+    </table>
 
     <a href="{{ url_for('upload') }}" class="button">Upload Image</a>
 </body>

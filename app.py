@@ -93,7 +93,7 @@ def register():
 
     return render_template('register.html', register=True)
 
-@app.route('/logout', methods=['POST'] )
+@app.route('/logout' )
 @login_required
 def logout():
     logout_user()
