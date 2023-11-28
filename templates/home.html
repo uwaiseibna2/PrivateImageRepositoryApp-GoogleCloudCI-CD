@@ -62,6 +62,19 @@
             display: none;
             padding: 6px 12px;
             border-top: none;
+        }.button {
+            background-color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: black;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px; /* Add some spacing between buttons */
+        }
+
+        .button:hover {
+            background-color: lightgrey;
         }
     </style>
 </head>
@@ -71,7 +84,7 @@
             <h1>Image Gallery</h1>
             <div class="user-info">
                 <span>Logged in as: {{ username }}</span>
-                <a href="/logout">Logout</a>
+                <a href="/logout" class="button">Logout</a>
             </div>
         </header>
         <div class="tab">
@@ -88,9 +101,9 @@
             </ul>
         </div>
 
-        <div id="Upload" class="tabcontent" style="display:flow-root;">
-            <a href="{{ url_for('upload') }}">Upload Image</a>
-        </div>
+
+        <a href="{{ url_for('upload') }}" class="button">Upload Image</a>
+     
         <!-- Add more tab content divs if needed -->
 
         <!-- JavaScript to handle tabs -->
