@@ -187,7 +187,7 @@ def image(filename):
 
     if blob.exists():
         image_metadata = blob.metadata
-        signed_url = blob.generate_signed_url(expires_in=3600)  # Set the URL expiration time
+        signed_url = blob.generate_signed_url(3600)  # Set the URL expiration time
     else:
         image_metadata = {'Status': 'Image not found in GCS bucket'}
         signed_url = None
@@ -207,7 +207,7 @@ def download(filename):
     blob = bucket.blob(filename)
 
     if blob.exists() and blob.metadata.get('associated_user') == current_user.username:
-        signed_url = blob.generate_signed_url(expires_in=3600)  # Set the URL expiration time
+        signed_url = blob.generate_signed_url(3600)  # Set the URL expiration time
         return redirect(signed_url)
     else:
         abort(403)
