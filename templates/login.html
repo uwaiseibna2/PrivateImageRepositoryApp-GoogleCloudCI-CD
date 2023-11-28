@@ -4,31 +4,51 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <style>
-        /* ... (previously provided styles) ... */
-        .login-btn {
-            padding: 8px 15px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-            margin-top: 10px;
+        .login-form {
+            text-align: center;
+            margin-top: 100px;
         }
-        .login-btn:hover {
-            background-color: #2980b9;
+
+        .login-form input[type="text"],
+        .login-form input[type="password"],
+        .login-form input[type="submit"] {
+            width: 250px;
+            padding: 10px;
+            border-radius: 25px;
+            border: none;
+            margin-bottom: 10px;
+            display: block;
+            margin: 10px auto;
+        }
+
+        .login-form input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h2>Login</h2>
-    <form action="/login" method="POST">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br><br>
-        <input type="submit" value="Login" class="login-btn">
-    </form>
-    <p>Don't have an account? <a href="/register">Register here</a>.</p>
+    <div class="login-form">
+        
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit" value="Login">
+        </form>
+        <p> New User? <a href="/register" class="button">Register here</a></p>
+    </div>
 </body>
 </html>

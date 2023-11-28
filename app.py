@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,flash
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -64,7 +64,7 @@ def login():
             login_user(User(user['id'], user['username'], user['password']))
             return redirect(url_for('home'))
         else:
-            return "Invalid username or password"
+            flash('Invalid username or password', 'error')
 
     return render_template('login.html')
 #comment
@@ -80,11 +80,11 @@ def register():
         existing_user = cursor.fetchone()
 
         if existing_user:
-            return "This username already exists. Please choose a different one."
+            flash('This username already exists', 'error')
         else:
             cursor.execute("INSERT INTO User (username, password) VALUES (%s, %s)", (username, hashed_password))
             connection.commit()
-
+            flash('Account created successfully', 'success')
             cursor.execute("SELECT * FROM User WHERE username=%s", (username,))
             new_user = cursor.fetchone()
             if new_user:
@@ -94,7 +94,7 @@ def register():
 
     return render_template('register.html', register=True)
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'] )
 @login_required
 def logout():
     logout_user()
