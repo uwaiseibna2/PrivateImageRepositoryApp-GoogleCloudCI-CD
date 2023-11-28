@@ -84,7 +84,6 @@ def register():
         else:
             cursor.execute("INSERT INTO User (username, password) VALUES (%s, %s)", (username, hashed_password))
             connection.commit()
-            flash('Account created successfully', 'success')
             cursor.execute("SELECT * FROM User WHERE username=%s", (username,))
             new_user = cursor.fetchone()
             if new_user:

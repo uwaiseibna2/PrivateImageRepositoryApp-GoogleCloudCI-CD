@@ -4,9 +4,9 @@
     <title>Image Details</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: bisque;
             margin: 20px;
+            text-align: center;
         }
         h1 {
             margin-bottom: 20px;
@@ -27,15 +27,20 @@
         img {
             max-width: 100%;
             height: auto;
+            width: 100%;
             margin-top: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         form {
             margin-top: 20px;
         }
-        .download-btn {
-            display: inline-block;
+        .download-btn, .delete-btn {
             padding: 10px 20px;
-            background-color: #3498db;
+            background-color: #4CAF50;
             color: white;
             text-decoration: none;
             border: none;
@@ -45,17 +50,11 @@
             margin-top: 10px;
         }
         .delete-btn {
-            padding: 8px 15px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
         }
-        .delete-btn:hover, .download-btn:hover {
-            background-color: #2980b9;
+        .download-btn:hover, .delete-btn:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -76,7 +75,7 @@
         </table>
         
         <a href="{{ url_for('download', filename=filename) }}" class="download-btn">Download Image</a>
-        <br>
+        <br><br>
         <img src="{{ gcs_url }}" alt="{{ filename }}">
         <form action="" method="POST">
             <input type="submit" name="delete_image" value="Delete Image" class="delete-btn">
