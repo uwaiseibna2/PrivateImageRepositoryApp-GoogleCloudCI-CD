@@ -2,7 +2,7 @@ import os,json
 from flask import Flask, render_template, request, redirect, url_for,flash
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime,timedelta
 import pymysql
 from google.cloud import storage
 from werkzeug.utils import secure_filename
@@ -183,7 +183,7 @@ def image(filename):
 
     
     blob = bucket.get_blob(filename)
-    gcs_url = blob.generate_signed_url(expiration=datetime.timedelta(minutes=45))
+    gcs_url = blob.generate_signed_url(expiration=timedelta(minutes=45))
     if blob.exists():
         image_metadata = blob.metadata
     else:
@@ -203,7 +203,7 @@ def image(filename):
 def download(filename):
     # Construct the GCS URL for the file to be downloaded
     blob = bucket.get_blob(filename)
-    gcs_url = blob.generate_signed_url(expiration=datetime.timedelta(minutes=45))
+    gcs_url = blob.generate_signed_url(expiration=timedelta(minutes=45))
 
     # Redirect the user to the GCS URL for download
     return redirect(gcs_url)
