@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from PIL.ExifTags import TAGS
 from google.cloud import secretmanager
-from google.oauth2 import service_account
+from google.oauth import service_account
 
 # Define the path to your service account key JSON file
 
