@@ -48,7 +48,7 @@ def load_user(user_id):
         return User(user_data['id'], user_data['username'], user_data['password'])
     else:
         return None
-
+#check
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
