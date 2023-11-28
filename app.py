@@ -183,7 +183,7 @@ def image(filename):
 
     
     blob = bucket.get_blob(filename)
-    gcs_url = blob.generate_signed_url(3600)
+    gcs_url = blob.generate_signed_url(expiration=datetime.timedelta(minutes=45))
     if blob.exists():
         image_metadata = blob.metadata
     else:
@@ -203,7 +203,7 @@ def image(filename):
 def download(filename):
     # Construct the GCS URL for the file to be downloaded
     blob = bucket.get_blob(filename)
-    gcs_url = blob.generate_signed_url(3600)
+    gcs_url = blob.generate_signed_url(expiration=datetime.timedelta(minutes=45))
 
     # Redirect the user to the GCS URL for download
     return redirect(gcs_url)
