@@ -3,6 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <style>
+        /* ... (previously provided styles) ... */
+        .register-btn {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .register-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
     <h2>Register</h2>
@@ -11,7 +27,7 @@
         <input type="text" id="username" name="username"><br>
         <label for="password">Password:</label><br>
         <input type="password" id="password" name="password"><br><br>
-        <input type="submit" value="Register">
+        <input type="submit" value="Register" class="register-btn">
     </form>
     <p>Already have an account? <a href="/login">Login here</a>.</p>
 </body>

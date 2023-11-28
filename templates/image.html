@@ -32,6 +32,31 @@
         form {
             margin-top: 20px;
         }
+        .download-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .delete-btn {
+            padding: 8px 15px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .delete-btn:hover, .download-btn:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
@@ -50,11 +75,11 @@
             {% endfor %}
         </table>
         
-        <a href="{{ url_for('download', filename=filename) }}">Download Image</a>
+        <a href="{{ url_for('download', filename=filename) }}" class="download-btn">Download Image</a>
         <br>
         <img src="{{ gcs_url }}" alt="{{ filename }}">
         <form action="" method="POST">
-            <input type="submit" name="delete_image" value="Delete Image">
+            <input type="submit" name="delete_image" value="Delete Image" class="delete-btn">
         </form>
     </div>
 </body>
